@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lokt – Organize. Foque. Execute.</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080810;
+      --surface: #10101a;
+      --card: #13131f;
+      --accent: #7c6af7;
+      --accent2: #a78bfa;
+      --glow: rgba(124,106,247,0.15);
+      --text: #f0f0f8;
+      --muted: #6b7280;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── GRADIENT ORBS ── */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0;
+    }
+    .orb1 { width: 500px; height: 500px; background: rgba(124,106,247,0.12); top: -100px; left: -100px; }
+    .orb2 { width: 400px; height: 400px; background: rgba(167,139,250,0.08); bottom: 100px; right: -80px; }
+    .orb3 { width: 300px; height: 300px; background: rgba(99,102,241,0.1); top: 40%; left: 50%; transform: translateX(-50%); }
+
+    /* ── NAV ── */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 48px;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,16,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px; }
+    .logo span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn-nav {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: #fff; padding: 9px 22px; border-radius: 999px;
+      text-decoration: none; font-size: 0.88rem; font-weight: 600;
+      transition: opacity .2s, box-shadow .2s;
+      box-shadow: 0 0 20px rgba(124,106,247,0.3);
+    }
+    .btn-nav:hover { opacity: 0.88; box-shadow: 0 0 32px rgba(124,106,247,0.5); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      text-align: center; padding: 120px 24px 80px;
+      max-width: 800px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(124,106,247,0.1);
+      border: 1px solid rgba(124,106,247,0.25);
+      color: var(--accent2); font-size: 0.78rem; font-weight: 600;
+      padding: 6px 16px; border-radius: 999px; margin-bottom: 28px;
+      letter-spacing: 0.3px;
+      animation: fadeDown 0.6s ease both;
+    }
+    .hero h1 {
+      font-size: clamp(2.6rem, 6vw, 4rem);
+      font-weight: 900; line-height: 1.1;
+      letter-spacing: -2px; margin-bottom: 24px;
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(135deg, var(--accent), var(--accent2), #c4b5fd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--muted); font-size: 1.1rem; margin-bottom: 40px;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+      animation: fadeUp 0.7s ease 0.2s both;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.7s ease 0.3s both;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: #fff; padding: 14px 28px; border-radius: 14px;
+      text-decoration: none; font-size: 0.95rem; font-weight: 700;
+      box-shadow: 0 0 32px rgba(124,106,247,0.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 48px rgba(124,106,247,0.6); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); color: var(--text);
+      padding: 14px 28px; border-radius: 14px;
+      text-decoration: none; font-size: 0.95rem; font-weight: 600;
+      backdrop-filter: blur(10px);
+      transition: border-color .2s, background .2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); background: rgba(124,106,247,0.08); }
+
+    /* ── PHONE MOCKUP ── */
+    .mockup-wrap {
+      position: relative; z-index: 1;
+      max-width: 360px; margin: 64px auto 0;
+      animation: fadeUp 0.8s ease 0.4s both;
+    }
+    .mockup {
+      background: linear-gradient(145deg, #1a1a2e, #16162a);
+      border-radius: 40px;
+      border: 1px solid rgba(124,106,247,0.2);
+      padding: 16px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 40px 80px rgba(0,0,0,0.6),
+        0 0 80px rgba(124,106,247,0.1);
+    }
+    .mockup-screen {
+      background: #0d0d1a;
+      border-radius: 28px;
+      padding: 24px 20px;
+      min-height: 480px;
+      overflow: hidden;
+    }
+    .mockup-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .mockup-top .greet { font-size: 0.75rem; color: var(--muted); }
+    .mockup-top .name { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .mockup-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #6366f1); }
+    .mockup-hub {
+      background: linear-gradient(135deg, rgba(124,106,247,0.15), rgba(99,102,241,0.08));
+      border: 1px solid rgba(124,106,247,0.2);
+      border-radius: 16px; padding: 16px; margin-bottom: 12px;
+    }
+    .hub-name { font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
+    .hub-tags { display: flex; gap: 6px; }
+    .tag {
+      font-size: 0.65rem; padding: 3px 10px; border-radius: 999px; font-weight: 600;
+    }
+    .tag-red { background: rgba(239,68,68,0.15); color: #f87171; }
+    .tag-yellow { background: rgba(234,179,8,0.15); color: #facc15; }
+    .tag-green { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .mockup-task {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .task-dot.high { background: #f87171; }
+    .task-dot.med { background: #facc15; }
+    .task-dot.low { background: #4ade80; }
+    .task-title { font-size: 0.78rem; color: var(--text); flex: 1; }
+    .task-date { font-size: 0.68rem; color: var(--muted); }
+
+    /* ── STATS ── */
+    .stats {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; gap: 48px;
+      padding: 48px 24px; flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 900; letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── FEATURES ── */
+    .section { position: relative; z-index: 1; padding: 96px 24px; max-width: 1080px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.2);
+      color: var(--accent2); font-size: 0.75rem; font-weight: 700;
+      padding: 4px 14px; border-radius: 999px; margin-bottom: 16px;
+      text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .section h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;
+    }
+    .section .sub { color: var(--muted); font-size: 1rem; margin-bottom: 56px; max-width: 480px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .feat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+      position: relative; overflow: hidden;
+    }
+    .feat-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(124,106,247,0.05), transparent);
+      opacity: 0; transition: opacity .3s;
+    }
+    .feat-card:hover { border-color: rgba(124,106,247,0.4); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(124,106,247,0.1); }
+    .feat-card:hover::before { opacity: 1; }
+    .feat-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(124,106,247,0.2), rgba(99,102,241,0.1));
+      border: 1px solid rgba(124,106,247,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 18px;
+    }
+    .feat-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .feat-card p { font-size: 0.86rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── VIEWS ── */
+    .views-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .view-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px 24px;
+      text-align: center; position: relative; overflow: hidden;
+      transition: border-color .3s, transform .3s;
+    }
+    .view-card:hover { border-color: rgba(124,106,247,0.35); transform: translateY(-3px); }
+    .view-card.soon { opacity: 0.6; }
+    .view-badge {
+      position: absolute; top: 14px; right: 14px;
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+      background: rgba(124,106,247,0.15); color: var(--accent2);
+      padding: 3px 8px; border-radius: 999px; letter-spacing: 0.5px;
+    }
+    .view-icon { font-size: 2.2rem; margin-bottom: 14px; }
+    .view-card h4 { font-size: 1rem; font-weight: 800; margin-bottom: 6px; }
+    .view-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── CTA ── */
+    .cta-section {
+      position: relative; z-index: 1;
+      text-align: center; padding: 100px 24px;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,106,247,0.12) 0%, transparent 70%);
+      left: 50%; top: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .cta-section h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900; letter-spacing: -1.5px; margin-bottom: 16px;
+    }
+    .cta-section p { color: var(--muted); font-size: 1rem; margin-bottom: 40px; }
+    .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-size: 1.1rem; font-weight: 800; }
+    .footer-logo span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .stats { gap: 28px; }
+      footer { flex-direction: column; text-align: center; padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><span>Lokt</span></div>
+  <div class="nav-links">
+    <a href="#features">Recursos</a>
+    <a href="#views">Modos</a>
+    <a href="privacy.html">Privacidade</a>
+    <a href="terms.html">Termos</a>
+  </div>
+  <a href="#download" class="btn-nav">Baixar grátis</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✦ Disponível no Android</div>
+  <h1>Produtividade que<br/><span class="grad">se adapta a você.</span></h1>
+  <p>Organize tarefas, hubs e projetos num app que pensa do seu jeito — com Kanban, Calendário, Lista e o modo inteligente Drift.</p>
+  <div class="hero-actions">
+    <a href="#download" class="btn-primary">▶ &nbsp;Google Play</a>
+    <a href="#features" class="btn-secondary">Explorar recursos →</a>
+  </div>
+
+  <!-- PHONE MOCKUP -->
+  <div class="mockup-wrap">
+    <div class="mockup">
+      <div class="mockup-screen">
+        <div class="mockup-top">
+          <div>
+            <div class="greet">Bom dia 👋</div>
+            <div class="name">Seus Hubs</div>
+          </div>
+          <div class="mockup-avatar"></div>
+        </div>
+
+        <div class="mockup-hub">
+          <div class="hub-name">💼 Trabalho</div>
+          <div class="hub-tags">
+            <span class="tag tag-red">3 urgentes</span>
+            <span class="tag tag-yellow">5 em andamento</span>
+          </div>
+        </div>
+
+        <div class="mockup-hub" style="background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(67,56,202,0.06)); border-color: rgba(99,102,241,0.2);">
+          <div class="hub-name">📚 Estudos</div>
+          <div class="hub-tags">
+            <span class="tag tag-green">2 concluídas</span>
+            <span class="tag tag-yellow">4 pendentes</span>
+          </div>
+        </div>
+
+        <div style="font-size:0.7rem; color: var(--muted); margin: 16px 0 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Hoje</div>
+
+        <div class="mockup-task">
+          <div class="task-dot high"></div>
+          <div class="task-title">Revisar proposta do cliente</div>
+          <div class="task-date">14:00</div>
+        </div>
+        <div class="mockup-task">
+          <div class="task-dot med"></div>
+          <div class="task-title">Reunião semanal de equipe</div>
+          <div class="task-date">16:30</div>
+        </div>
+        <div class="mockup-task">
+          <div class="task-dot low"></div>
+          <div class="task-title">Estudar capítulo 4</div>
+          <div class="task-date">20:00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">4</div>
+    <div class="stat-label">Modos de visualização</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Gratuito</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Hubs e tarefas</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">LGPD</div>
+    <div class="stat-label">Privacidade garantida</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-tag">Recursos</div>
+  <h2>Tudo que você precisa.<br/>Nada que não precisa.</h2>
+  <p class="sub">Projetado para ser poderoso sem ser complicado. Cada funcionalidade existe por um motivo.</p>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">☁️</div>
+      <h3>Sincronização em tempo real</h3>
+      <p>Seus hubs e tarefas disponíveis em qualquer dispositivo via Firebase. Tudo sincronizado automaticamente com sua conta Google.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔁</div>
+      <h3>Tarefas recorrentes</h3>
+      <p>Configure repetições diárias, semanais, mensais ou anuais. O Lokt gerencia o ciclo de vida das suas rotinas automaticamente.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎯</div>
+      <h3>Prioridades e subtarefas</h3>
+      <p>Classifique por urgência e divida tarefas complexas em etapas menores. Acompanhe o progresso em tempo real.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🍅</div>
+      <h3>Pomodoro nativo</h3>
+      <p>Timer Pomodoro integrado em cada tarefa. Foque em blocos, registre sessões e acumule histórico de concentração.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <h3>Google Meet & Calendário</h3>
+      <p>Crie reuniões do Google Meet diretamente a partir de uma tarefa e sincronize eventos com o Google Calendar.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌙</div>
+      <h3>Funciona offline</h3>
+      <p>Trabalhe sem internet. Os dados ficam salvos localmente e sincronizam assim que a conexão é restabelecida.</p>
+    </div>
+  </div>
+</section>
+
+<!-- VIEWS -->
+<section class="section" id="views" style="padding-top: 0;">
+  <div class="section-tag">Modos</div>
+  <h2>Cada hub, do seu jeito.</h2>
+  <p class="sub">Escolha como visualizar e trabalhar em cada projeto.</p>
+  <div class="views-grid">
+    <div class="view-card">
+      <div class="view-icon">📋</div>
+      <h4>Kanban</h4>
+      <p>Colunas com drag & drop. Visualização de fluxo completa para times ou projetos complexos.</p>
+    </div>
+    <div class="view-card">
+      <div class="view-icon">📆</div>
+      <h4>Calendário</h4>
+      <p>Visualize tarefas por data. Ideal para quem gerencia prazos e reuniões frequentes.</p>
+    </div>
+    <div class="view-card">
+      <div class="view-icon">📝</div>
+      <h4>Lista</h4>
+      <p>Formato simples e direto. Perfeito para checklists diários e GTD.</p>
+    </div>
+    <div class="view-card soon">
+      <div class="view-badge">Em breve</div>
+      <div class="view-icon">🌀</div>
+      <h4>Drift</h4>
+      <p>Modo inteligente que prioriza automaticamente o que realmente importa. Chegando na v2.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="download">
+  <h2>Comece agora.<br/><span style="background: linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">É gratuito.</span></h2>
+  <p>Sem anúncios. Sem assinatura obrigatória. Seus dados pertencem a você.</p>
+  <div class="cta-btns">
+    <a href="https://play.google.com/store/apps/details?id=com.drifttask.app" class="btn-primary">▶ &nbsp;Baixar no Google Play</a>
+    <a href="privacy.html" class="btn-secondary">Política de Privacidade</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span>Lokt</span></div>
+  <div class="footer-links">
+    <a href="privacy.html">Privacidade</a>
+    <a href="terms.html">Termos de Uso</a>
+  </div>
+  <div class="footer-copy">© 2026 Lokt. Todos os direitos reservados.</div>
+</footer>
+
+</body>
+</html>
