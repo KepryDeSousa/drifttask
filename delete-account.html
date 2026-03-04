@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delete Account – Drifttask</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 48px;
+      max-width: 560px;
+      width: 100%;
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 32px;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: #6c63ff; }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      margin-bottom: 36px;
+    }
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .steps li:last-child { border-bottom: none; }
+    .steps li::before {
+      content: counter(step);
+      background: #6c63ff;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .steps li span {
+      font-size: 15px;
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .steps li strong { color: #fff; }
+    .warning {
+      background: #2a1a1a;
+      border: 1px solid #5a2a2a;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #ff6b6b;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 32px 0;
+    }
+    .lang-title {
+      font-size: 13px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    .pt h2 { color: #ffffff; font-size: 20px; margin-bottom: 10px; }
+    .pt .subtitle { margin-bottom: 28px; }
+    .contact {
+      font-size: 13px;
+      color: #555;
+      margin-top: 8px;
+    }
+    .contact a { color: #6c63ff; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">Drift<span>task</span></div>
+
+    <!-- ENGLISH -->
+    <h1>Delete Your Account</h1>
+    <p class="subtitle">
+      You can permanently delete your Drifttask account and all associated data directly from the app.
+    </p>
+
+    <ol class="steps">
+      <li><span>Open the <strong>Drifttask</strong> app on your device.</span></li>
+      <li><span>Tap the <strong>Settings</strong> tab in the bottom navigation.</span></li>
+      <li><span>Scroll down and tap <strong>"Delete Account"</strong>.</span></li>
+      <li><span>Confirm the action in the dialog that appears.</span></li>
+    </ol>
+
+    <div class="warning">
+      ⚠️ This action is <strong>permanent and irreversible</strong>. All your hubs, tasks, statistics, and personal data will be deleted from our servers immediately.
+    </div>
+
+    <hr class="divider" />
+
+    <!-- PORTUGUÊS -->
+    <div class="pt">
+      <p class="lang-title">Português</p>
+      <h2>Excluir sua Conta</h2>
+      <p class="subtitle">
+        Você pode excluir permanentemente sua conta Drifttask e todos os dados associados diretamente pelo app.
+      </p>
+
+      <ol class="steps">
+        <li><span>Abra o app <strong>Drifttask</strong> no seu dispositivo.</span></li>
+        <li><span>Toque na aba <strong>Configurações</strong> na navegação inferior.</span></li>
+        <li><span>Role para baixo e toque em <strong>"Excluir Conta"</strong>.</span></li>
+        <li><span>Confirme a ação no diálogo que aparecer.</span></li>
+      </ol>
+
+      <div class="warning">
+        ⚠️ Esta ação é <strong>permanente e irreversível</strong>. Todos os seus hubs, tarefas, estatísticas e dados pessoais serão excluídos dos nossos servidores imediatamente.
+      </div>
+    </div>
+
+    <p class="contact">Need help? Contact us at <a href="mailto:support@drifttask.com">support@drifttask.com</a></p>
+  </div>
+</body>
+</html>
